@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from .utils.activations import sigmoid
+from utils.activations import sigmoid
 
 
 class logistic:
@@ -38,10 +38,11 @@ class logistic:
             dw = grads["dw"]
             db = grads["db"]
 
+            # update weights & bias
             self.W -= self.learning_rate * dw
             self.b -= self.learning_rate * db
 
-    def predict(self, X, Y):
+    def predict(self, X):
         pred = sigmoid(np.dot(self.W.T, X) + self.b)
 
         pred = (pred > 0.5).astype(float)
