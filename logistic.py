@@ -32,7 +32,7 @@ class logistic:
         n = X.shape[0]
         self.W = np.zeros((n, 1))
 
-        for i in range(self.learning_rate):
+        for i in range(self.max_iter):
             grads, J = self.propagate(X, Y)
 
             dw = grads["dw"]
