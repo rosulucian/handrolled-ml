@@ -2,7 +2,7 @@ import numpy as np
 import h5py
 
 
-def load_dataset(train_file, test_file):
+def load_cats(train_file, test_file):
     train_dataset = h5py.File(train_file, "r")
     # your train set features
     x_train = np.array(train_dataset["train_set_x"][:])
