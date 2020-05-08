@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from logistic import logistic
+from toy_shallow_nn import toy_shallow_nn
 from utils.datasets import load_cats
 
 cats = os.getenv('CATS')
@@ -20,8 +21,8 @@ test_flat = x_test.reshape(x_test.shape[0], -1).T
 train_flat = train_flat/255
 test_flat = test_flat/255
 
-#
-model = logistic()
+# model = logistic()
+model = toy_shallow_nn(max_iter=500, verbose=True)
 
 model.fit(train_flat, y_train)
 
