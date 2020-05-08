@@ -14,8 +14,8 @@ class logistic:
         m = X.shape[1]
 
         # forward propagation
-        z = np.dot(self.W.T, X) + self.b
-        A = sigmoid(z)
+        Z = np.dot(self.W.T, X) + self.b
+        A = sigmoid(Z)
         J = -np.sum(Y * np.log(A) + (1-Y) * np.log(1-A))/m
 
         # back propagation
