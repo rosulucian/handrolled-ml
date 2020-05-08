@@ -1,14 +1,15 @@
 import numpy as np
-import math
 from utils.activations import sigmoid
 
 
 class logistic:
-    def __init__(self, max_iter=100, tol=1e-3, learning_rate=0.01):
+    def __init__(self, max_iter=100, tol=1e-3, learning_rate=0.01, verbose=False):
         self.max_iter = max_iter
         self.tol = tol
         self.learning_rate = learning_rate
         self.b = 0
+        self.verbose = verbose
+        self.log_step = max_iter/10
 
     def propagate(self, X, Y):
         m = X.shape[1]
@@ -41,6 +42,9 @@ class logistic:
             # update weights & bias
             self.W -= self.learning_rate * dw
             self.b -= self.learning_rate * db
+
+            if(self.verbose and i % self.log_step == 0):
+                print(f'Iteration {i} cost J = {J}')
 
     def predict(self, X):
         pred = sigmoid(np.dot(self.W.T, X) + self.b)

@@ -3,13 +3,14 @@ from utils.activations import sigmoid
 
 
 class toy_shallow_nn():
-    def __init__(self, max_iter=100, learning_rate=0.05, hidden_nodes=4, verbose=False):
+    def __init__(self, max_iter=200, learning_rate=0.01, hidden_nodes=4, verbose=False):
         self.rand = 0.01
         self.m = 0
         self.max_iter = max_iter
         self.learning_rate = learning_rate
         self.hidden_nodes = hidden_nodes
         self.verbose = verbose
+        self.log_step = max_iter/10
 
     def init_params(self, X, Y):
         # sanity check
@@ -43,8 +44,8 @@ class toy_shallow_nn():
         dW2 = np.dot(dZ2, A1.T)/m
         db2 = np.sum(dZ2, axis=1, keepdims=True)/m
 
-        dZ1 = np.dot(self.W2.T, dZ2) * \
-            (1 - np.power(A1, 2))  # tanh`(Z1) = 1 - A1^2
+        # tanh`(Z1) = 1 - A1^2 = 1 - tanh(Z1)^2
+        dZ1 = np.dot(self.W2.T, dZ2) * (1 - np.power(A1, 2))
         dW1 = np.dot(dZ1, X.T)/m
         db1 = np.sum(dZ1, axis=1, keepdims=True)/m
 
@@ -71,7 +72,7 @@ class toy_shallow_nn():
 
             self.update_params(dW1, db1, dW2, db2)
 
-            if(self.verbose and i % 50 == 0):
+            if(self.verbose and i % self.log_step == 0):
                 print(f'Iteration {i} cost J = {J}')
 
     def predict(self, X):
