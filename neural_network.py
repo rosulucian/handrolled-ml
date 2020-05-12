@@ -1,9 +1,10 @@
 import numpy as np
-from utils.activations import activations, derivatives
+import utils.activations as act_fct
+# from utils.activations import forward, backward
 
 
 class neural_network():
-    def __init__(self, max_iter=200, learning_rate=0.01, layers=[(4, 'relu')], verbose=False):
+    def __init__(self, max_iter=200, learning_rate=0.01, layers=[(4, 'relu'), (1, 'sigmoid')], verbose=False):
         self.rand = 0.01
         self.m = 0
         self.max_iter = max_iter
@@ -19,8 +20,8 @@ class neural_network():
         # sanity check
         assert(X.shape[1] != 0 and X.shape[1] == self.m)
 
-        self.layers.insert(0, (self.m, 'identity'))  # insert input layer
-        self.layers.append((1, 'sigmoid'))  # add output layer; dummy
+        # insert input layer; dummy
+        self.layers.insert(0, (X.shape[0], 'identity'))
 
         for i in range(1, len(self.layers)):
             prev_nodes = self.layers[i-1][0]
@@ -28,29 +29,32 @@ class neural_network():
             actv = self.layers[i][1]
 
             layer = {
-                'W': np.random.randn(nodes, prev_nodes),
+                'W': 0.01 * np.random.randn(nodes, prev_nodes),
                 'b': np.zeros((nodes, 1)),
                 'actv': actv
             }
 
             self.params.append(layer)
 
+        # insert dummy node 0
+        self.params.insert(0, {'W': None, 'b': None, 'actv': None})
+
     def f_prop(self, X):
         activations = [{'A': X, 'Z': None}]
 
         for l in range(1, len(self.layers)):
-            A_prev = activations[l-1].A
+            A_prev = activations[l-1].get('A')
             layer = self.params[l]
 
-            Z = np.dot(layer.W, A_prev) + layer.b
-            A = activations[layer.act](Z)
+            Z = np.dot(layer.get('W'), A_prev) + layer.get('b')
+            A = act_fct.forward[layer.get('actv')](Z)
             activations.append({'A': A, 'Z': Z})
 
         return activations
 
     def compute_cost(self, AL, Y):
         J = -np.sum(Y * np.log(AL) + (1-Y) * np.log(1-AL))/self.m
-        return J
+        return np.squeeze(J)
 
     def b_prop(self, activations, Y):
         m = self.m
@@ -58,26 +62,34 @@ class neural_network():
 
         grads = []
 
-        AL = activations[-1][0]
+        AL = activations[-1].get('A')
         dA_prev = -(np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))  # dAL
 
-        for l in reversed(range(1, L-1)):
+        for l in reversed(range(1, L)):  # skip 0th layer; dummy layer
             layer = self.params[l]
 
-            Z = activations[l].Z
-            A_prev = activations[l-1].A
+            Z = activations[l].get('Z')
+            A_prev = activations[l-1].get('A')
 
             dA = dA_prev
-            dZ = derivatives[layer.act](dA, Z)
+            dZ = act_fct.backward[layer.get('actv')](dA, Z)
             dW = np.dot(dZ, A_prev.T)/m
             db = np.sum(dZ, axis=1, keepdims=True)/m
 
-            dA_prev = np.dot(layer.W.T, dZ)  # for next calculation
+            grads.insert(0, {'dW': dW, 'db': db})
+
+            dA_prev = np.dot(layer.get('W').T, dZ)  # for next calculation
+
+        grads.insert(0, {'dW': None, 'db': None})  # dummy grad for input
 
         return grads
 
     def update_params(self, grads):
-        #
+        for l in range(1, len(self.params)):
+            layer = self.params[l]
+
+            layer['W'] -= self.learning_rate * grads[l].get('dW')
+            layer['b'] -= self.learning_rate * grads[l].get('db')
 
         None
 
@@ -88,16 +100,22 @@ class neural_network():
             activations = self.f_prop(X)
 
             # compute cost
-            AL = activations[-1].A
-            cost = self.compute_cost(AL, Y)
+            AL = activations[-1].get('A')
+            J = self.compute_cost(AL, Y)
 
             # back prop
-            self.b_prop(activations, Y)
+            grads = self.b_prop(activations, Y)
 
             # update params
+            self.update_params(grads)
+
+            if(self.verbose and i % self.log_step == 0):
+                print(f'Iteration {i} cost J = {J}')
 
     def predict(self, X):
-        None
+        A = self.f_prop(X)[-1].get('A')
+        predictions = (A > 0.5).astype(float)
 
+        return predictions
 
 # TODO: add checks everywhere

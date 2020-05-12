@@ -1,19 +1,6 @@
 import numpy as np
 
 
-activations = {
-    'sigmoid': sigmoid,
-    'relu': relu,
-    'tanh': tanh
-}
-
-derivatives = {
-    'sigmoid': sigmoid_deriv,
-    'relu': relu_deriv,
-    'tanh': tanh_deriv
-}
-
-
 def sigmoid(Z):
     return 1 / (1 + np.exp(-Z))
 
@@ -53,3 +40,16 @@ def tanh_deriv(dA, Z):
     assert (dZ.shape == Z.shape)
 
     return dZ
+
+
+forward = {
+    'sigmoid': sigmoid,
+    'relu': relu,
+    'tanh': tanh
+}
+
+backward = {
+    'sigmoid': sigmoid_deriv,
+    'relu': relu_deriv,
+    'tanh': tanh_deriv
+}
