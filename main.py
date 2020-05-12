@@ -24,8 +24,10 @@ test_flat = test_flat/255
 
 # model = logistic(verbose=True)
 # model = toy_shallow_nn(max_iter=5000, hidden_nodes=8, verbose=True)
-model = neural_network(max_iter=3000, layers=[
-                       (4, 'relu'),  (4, 'relu'), (1, 'sigmoid')], verbose=True)
+# model = neural_network(max_iter=2500, layers=[
+#                        (20, 'relu'),  (7, 'relu'), (5, 'relu'), (1, 'sigmoid')], verbose=True)
+model = neural_network(max_iter=2500, layers=[
+                       (12, 'relu'), (4, 'relu'), (1, 'sigmoid')], verbose=True)
 
 model.fit(train_flat, y_train)
 

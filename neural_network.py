@@ -5,7 +5,7 @@ import utils.activations as act_fct
 
 class neural_network():
     def __init__(self, max_iter=200, learning_rate=0.01, layers=[(4, 'relu'), (1, 'sigmoid')], verbose=False):
-        self.rand = 0.01
+        self.rand = 0.05
         self.m = 0
         self.max_iter = max_iter
         self.learning_rate = learning_rate
@@ -19,6 +19,7 @@ class neural_network():
 
         # sanity check
         assert(X.shape[1] != 0 and X.shape[1] == self.m)
+        np.random.seed(1)
 
         # insert input layer; dummy
         self.layers.insert(0, (X.shape[0], 'identity'))
@@ -29,7 +30,7 @@ class neural_network():
             actv = self.layers[i][1]
 
             layer = {
-                'W': 0.01 * np.random.randn(nodes, prev_nodes),
+                'W': np.random.randn(nodes, prev_nodes) * self.rand,
                 'b': np.zeros((nodes, 1)),
                 'actv': actv
             }
@@ -48,6 +49,7 @@ class neural_network():
 
             Z = np.dot(layer.get('W'), A_prev) + layer.get('b')
             A = act_fct.forward[layer.get('actv')](Z)
+
             activations.append({'A': A, 'Z': Z})
 
         return activations
@@ -80,18 +82,23 @@ class neural_network():
 
             dA_prev = np.dot(layer.get('W').T, dZ)  # for next calculation
 
+            assert (dA_prev.shape == A_prev.shape)
+            assert (dW.shape == layer.get('W').shape)
+            assert (db.shape == layer.get('b').shape)
+
         grads.insert(0, {'dW': None, 'db': None})  # dummy grad for input
 
         return grads
 
     def update_params(self, grads):
         for l in range(1, len(self.params)):
-            layer = self.params[l]
+            # layer = self.params[l]
 
-            layer['W'] -= self.learning_rate * grads[l].get('dW')
-            layer['b'] -= self.learning_rate * grads[l].get('db')
+            assert(self.params[l]['W'].shape == grads[l].get('dW').shape)
+            assert(self.params[l]['b'].shape == grads[l].get('db').shape)
 
-        None
+            self.params[l]['W'] -= self.learning_rate * grads[l].get('dW')
+            self.params[l]['b'] -= self.learning_rate * grads[l].get('db')
 
     def fit(self, X, Y):
         self.init_params(X, Y)
@@ -109,7 +116,7 @@ class neural_network():
             # update params
             self.update_params(grads)
 
-            if(self.verbose and i % self.log_step == 0):
+            if(self.verbose and i % 100 == 0):
                 print(f'Iteration {i} cost J = {J}')
 
     def predict(self, X):
