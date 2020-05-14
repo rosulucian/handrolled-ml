@@ -3,9 +3,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from logistic import logistic
-from toy_shallow_nn import toy_shallow_nn
-from neural_network import neural_network
+from models.logistic import logistic
+from models.toy_shallow_nn import toy_shallow_nn
+from models.neural_network import neural_network
 from utils.datasets import load_cats
 
 cats = os.getenv('CATS')
