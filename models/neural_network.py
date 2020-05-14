@@ -1,11 +1,14 @@
 import numpy as np
 import utils.activations as act_fct
-# from utils.activations import forward, backward
+import utils.regularization as regl
+import functools
 
 
 class neural_network():
-    def __init__(self, max_iter=200, learning_rate=0.01, layers=[(4, 'relu'), (1, 'sigmoid')], verbose=False):
+    def __init__(self, max_iter=200, learning_rate=0.01, layers=[(4, 'relu'), (1, 'sigmoid')], regularization=None, lbd=0.7, verbose=False):
         self.rand = 0.05
+        self.reg = regularization
+        self.lbd = lbd
         self.m = 0
         self.max_iter = max_iter
         self.learning_rate = learning_rate
@@ -56,7 +59,13 @@ class neural_network():
 
     def compute_cost(self, AL, Y):
         J = -np.sum(Y * np.log(AL) + (1-Y) * np.log(1-AL))/self.m
-        return np.squeeze(J)
+        np.squeeze(J)
+
+        if self.reg:
+            param_list = list(map(lambda x: x['W'], self.params[1:]))
+            J += regl.reg_cost[self.reg](param_list, self.lbd, self.m)
+
+        return J
 
     def b_prop(self, activations, Y):
         m = self.m
@@ -70,6 +79,7 @@ class neural_network():
         for l in reversed(range(1, L)):  # skip 0th layer; dummy layer
             layer = self.params[l]
 
+            W = layer.get('W')
             Z = activations[l].get('Z')
             A_prev = activations[l-1].get('A')
 
@@ -78,9 +88,12 @@ class neural_network():
             dW = np.dot(dZ, A_prev.T)/m
             db = np.sum(dZ, axis=1, keepdims=True)/m
 
+            if self.reg:
+                dW -= regl.reg_grads[self.reg](W, self.lbd, self.m)
+
             grads.insert(0, {'dW': dW, 'db': db})
 
-            dA_prev = np.dot(layer.get('W').T, dZ)  # for next calculation
+            dA_prev = np.dot(W.T, dZ)  # for next calculation
 
             assert (dA_prev.shape == A_prev.shape)
             assert (dW.shape == layer.get('W').shape)
