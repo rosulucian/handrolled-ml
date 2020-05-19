@@ -6,7 +6,6 @@ import functools
 
 class neural_network():
     def __init__(self, max_iter=200, learning_rate=0.01, layers=[(4, 'relu'), (1, 'sigmoid')], regularization=None, lbd=0.7, verbose=False):
-        self.rand = 0.05
         self.reg = regularization
         self.lbd = lbd
         self.m = 0
@@ -22,7 +21,6 @@ class neural_network():
 
         # sanity check
         assert(X.shape[1] != 0 and X.shape[1] == self.m)
-        np.random.seed(1)
 
         # insert input layer; dummy
         self.layers.insert(0, (X.shape[0], 'identity'))
@@ -32,8 +30,9 @@ class neural_network():
             nodes = self.layers[i][0]
             actv = self.layers[i][1]
 
+            # He/Xavier initialization
             layer = {
-                'W': np.random.randn(nodes, prev_nodes) * self.rand,
+                'W': np.random.randn(nodes, prev_nodes) * np.sqrt(2./prev_nodes),
                 'b': np.zeros((nodes, 1)),
                 'actv': actv
             }

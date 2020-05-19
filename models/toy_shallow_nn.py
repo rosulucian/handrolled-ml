@@ -76,7 +76,7 @@ class toy_shallow_nn():
                 print(f'Iteration {i} cost J = {J}')
 
     def predict(self, X):
-        A1, A2 = self.f_prop(X)
+        _, A2 = self.f_prop(X)
         predictions = (A2 > 0.5).astype(float)
 
         return predictions
