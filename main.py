@@ -29,7 +29,7 @@ test_flat = test_flat/255
 # model = neural_network(max_iter=2500, layers=[
 #                        (12, 'relu'), (4, 'relu'), (1, 'sigmoid')], verbose=True)
 model = neural_network(max_iter=2500, layers=[
-                       (20, 'relu'),  (7, 'relu'), (5, 'relu'), (1, 'sigmoid')], verbose=True)
+                       (20, 'relu'),  (7, 'relu'), (5, 'relu'), (1, 'sigmoid')], regularization='L2', lbd=0.08, verbose=True)
 
 summary = model.fit(train_flat, y_train)
 

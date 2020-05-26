@@ -3,8 +3,9 @@ import pandas as pd
 
 
 class summary():
-    def __init__(self, model, learning_rate, regularization, lbd, iters):
+    def __init__(self, model, optimizer, learning_rate, regularization, lbd, iters):
         self.model = model
+        self.optimizer = optimizer
         self.specif = ''
         self.costs = []
         self.train_time = 0

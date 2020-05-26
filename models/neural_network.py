@@ -7,7 +7,8 @@ import time
 
 
 class neural_network():
-    def __init__(self, max_iter=200, learning_rate=0.01, layers=[(4, 'relu'), (1, 'sigmoid')], regularization=None, lbd=0.7, verbose=False):
+    def __init__(self, max_iter=200, optimizer='gd', learning_rate=0.01, beta1=0.9, beta2=0.999, layers=[(4, 'relu'), (1, 'sigmoid')], regularization=None, lbd=0.7, verbose=False):
+        self.optimizer = optimizer
         self.reg = regularization
         self.lbd = lbd
         self.m = 0
@@ -17,9 +18,10 @@ class neural_network():
         self.layers = layers
         self.verbose = verbose
         self.log_step = 100
+        self.epsilon = 1e-8  # numerical stability eps
 
         self.summary = summary(
-            model='toy_nn', learning_rate=learning_rate, regularization=regularization, lbd=lbd, iters=max_iter)
+            model='toy_nn', learning_rate=learning_rate, optimizer=optimizer, regularization=regularization, lbd=lbd, iters=max_iter)
 
         for l in layers:
             self.summary.specif += f'{l[0]}x{l[1]};'
@@ -38,12 +40,21 @@ class neural_network():
             nodes = self.layers[i][0]
             actv = self.layers[i][1]
 
+            w_shape = (nodes, prev_nodes)
+            b_shape = (nodes, 1)
+
             # He/Xavier initialization
             layer = {
-                'W': np.random.randn(nodes, prev_nodes) * np.sqrt(2./prev_nodes),
-                'b': np.zeros((nodes, 1)),
+                'W': np.random.randn(w_shape[0], w_shape[1]) * np.sqrt(2./prev_nodes),
+                'b': np.zeros(b_shape),
                 'actv': actv
             }
+
+            if self.optimizer is 'adam':
+                layer['vdW'] = np.zeros(w_shape[0], w_shape[1])
+                layer['vdb'] = np.zeros(b_shape)
+                layer['sdW'] = np.zeros(w_shape[0], w_shape[1])
+                layer['sdb'] = np.zeros(b_shape)
 
             self.params.append(layer)
 
@@ -114,13 +125,13 @@ class neural_network():
 
     def update_params(self, grads):
         for l in range(1, len(self.params)):
-            # layer = self.params[l]
+            layer = self.params[l]
 
-            assert(self.params[l]['W'].shape == grads[l].get('dW').shape)
-            assert(self.params[l]['b'].shape == grads[l].get('db').shape)
+            assert(layer['W'].shape == grads[l].get('dW').shape)
+            assert(layer['b'].shape == grads[l].get('db').shape)
 
-            self.params[l]['W'] -= self.learning_rate * grads[l].get('dW')
-            self.params[l]['b'] -= self.learning_rate * grads[l].get('db')
+            layer['W'] -= self.learning_rate * grads[l].get('dW')
+            layer['b'] -= self.learning_rate * grads[l].get('db')
 
     def fit(self, X, Y):
         self.init_params(X, Y)
