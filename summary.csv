@@ -1,0 +1,5 @@
+,model,specif,train_time,learning_rate,regularization,lbd,iterations,train_accuracy,test_accuracy
+0,toy_nn,12xrelu;4xrelu;1xsigmoid;,23.8180812,0.01,L2,0.7,1000,99.04306220095694,78.0
+0,toy_nn,12xrelu;4xrelu;1xsigmoid;,56.862862199999995,0.01,L2,0.7,2500,100.0,52.0
+0,toy_nn,12xrelu;8xrelu;4xrelu;1xsigmoid;,58.7097479,0.01,L2,0.7,2500,100.0,86.0
+0,toy_nn,20xrelu;7xrelu;5xrelu;1xsigmoid;,60.543467899999996,0.01,,0.7,2500,100.0,76.0

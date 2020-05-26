@@ -1,7 +1,9 @@
 import numpy as np
 import utils.activations as act_fct
 import utils.regularization as regl
+from models.summary import summary
 import functools
+import time
 
 
 class neural_network():
@@ -14,7 +16,13 @@ class neural_network():
         self.params = []
         self.layers = layers
         self.verbose = verbose
-        self.log_step = max_iter/10
+        self.log_step = 100
+
+        self.summary = summary(
+            model='toy_nn', learning_rate=learning_rate, regularization=regularization, lbd=lbd, iters=max_iter)
+
+        for l in layers:
+            self.summary.specif += f'{l[0]}x{l[1]};'
 
     def init_params(self, X, Y):
         self.m = Y.shape[1]
@@ -63,6 +71,8 @@ class neural_network():
         if self.reg:
             param_list = list(map(lambda x: x['W'], self.params[1:]))
             J += regl.reg_cost[self.reg](param_list, self.lbd, self.m)
+
+        self.summary.costs.append(J)
 
         return J
 
@@ -115,6 +125,8 @@ class neural_network():
     def fit(self, X, Y):
         self.init_params(X, Y)
 
+        start = time.perf_counter()
+
         for i in range(self.max_iter):
             activations = self.f_prop(X)
 
@@ -130,6 +142,11 @@ class neural_network():
 
             if(self.verbose and i % 100 == 0):
                 print(f'Iteration {i} cost J = {J}')
+
+        end = time.perf_counter()
+        self.summary.train_time = end - start
+
+        return self.summary
 
     def predict(self, X):
         A = self.f_prop(X)[-1].get('A')
