@@ -15,6 +15,8 @@ class summary():
         self.iterations = iters
         self.train_accuracy = 0
         self.test_accuracy = 0
+        self.train_size = 0
+        self.dataset = None
 
     def to_dict(self):
         return dict((name, [getattr(self, name)]) for name in vars(self) if not name.startswith('costs'))
@@ -25,3 +27,11 @@ class summary():
         df = pd.DataFrame.from_dict(sum_dict)
 
         df.to_csv(filename, mode='a', header=False)
+
+    def set_accuracies(self, pred_train, pred_test, y_train, y_test, print_acc=False):
+        self.test_accuracy = 100 - np.mean(np.abs(pred_test - y_test)) * 100
+        self.train_accuracy = 100 - np.mean(np.abs(pred_train - y_train)) * 100
+
+        if print_acc:
+            print("train accuracy: {} %".format(self.train_accuracy))
+            print("train accuracy: {} %".format(self.test_accuracy))

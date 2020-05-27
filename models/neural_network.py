@@ -28,6 +28,7 @@ class neural_network():
 
     def init_params(self, X, Y):
         self.m = Y.shape[1]
+        self.summary.train_size = self.m
 
         # sanity check
         assert(X.shape[1] != 0 and X.shape[1] == self.m)

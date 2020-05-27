@@ -15,7 +15,7 @@ train_file = os.path.join(cats, 'train.h5')
 test_file = os.path.join(cats, 'test.h5')
 x_train, y_train, x_test, y_test, classes = load_cats(train_file, test_file)
 
-plt.imshow(x_train[5])
+# plt.imshow(x_train[5])
 
 # preprocess
 train_flat = x_train.reshape(x_train.shape[0], -1).T
@@ -36,10 +36,11 @@ summary = model.fit(train_flat, y_train)
 pred_train = model.predict(train_flat)
 pred_test = model.predict(test_flat)
 
-summary.test_accuracy = 100 - np.mean(np.abs(pred_test - y_test)) * 100
-summary.train_accuracy = 100 - np.mean(np.abs(pred_train - y_train)) * 100
+summary.dataset = 'cats'
+summary.set_accuracies(pred_train, pred_test, y_train, y_test, print_acc=True)
 
-print("train accuracy: {} %".format(summary.train_accuracy))
-print("test accuracy: {} %".format(summary.test_accuracy))
+# plt.plot(summary.costs)
+# plt.ylabel('cost')
+# plt.show()
 
 summary.save_to_csv()
