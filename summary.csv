@@ -14,3 +14,5 @@
 0,toy_nn,gd,20xrelu;7xrelu;5xrelu;1xsigmoid;,75.2206972,0.01,L2,0.08,2500,100.0,70.0,209,cats
 0,toy_nn,gd,20xrelu;7xrelu;5xrelu;1xsigmoid;,72.2044935,0.01,L2,0.08,2500,96.17224880382776,64.0,209,cats
 0,toy_nn,gd,20xrelu;7xrelu;5xrelu;1xsigmoid;,81.1996704,0.01,L2,0.08,2500,100.0,76.0,209,cats
+0,toy_nn,gd,12xrelu;4xrelu;1xsigmoid;,44.260017699999935,0.01,,0.7,2000,100.0,64.0,209,cats
+0,toy_nn,gd,12xrelu;4xrelu;1xsigmoid;,49.6433164,0.01,L2,0.7,2000,98.08612440191388,82.0,209,cats
